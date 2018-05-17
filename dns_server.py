@@ -29,25 +29,28 @@ class DnsThread(threading.Thread):
         fd.bind(('', 53))
 
         while True:
-            packet, isp_dns_address = fd.recvfrom(2048)
-            req = dnslib.DNSRecord.parse(packet)
+            try:
+                packet, isp_dns_address = fd.recvfrom(8192)
+                req = dnslib.DNSRecord.parse(packet)
 
-            a = req.reply()
-            q_name = req.get_q().qname
-            q_type = req.get_q().qtype
-            q_type_str = dnslib.QTYPE.get(q_type)
+                a = req.reply()
+                q_name = req.get_q().qname
+                q_type = req.get_q().qtype
+                q_type_str = dnslib.QTYPE.get(q_type)
 
-            if q_type_str == 'A':
-                a.add_answer(dnslib.RR(q_name, dnslib.QTYPE.A, rdata=dnslib.A(SERVER_PUBLIC_IP), ttl=600))
+                if q_type_str == 'A':
+                    a.add_answer(dnslib.RR(q_name, dnslib.QTYPE.A, rdata=dnslib.A(SERVER_PUBLIC_IP), ttl=600))
 
-                lock.acquire()
-                k = str(q_name)
-                domain_dns_dict[k] = isp_dns_address[0]
-                delete_later(domain_dns_dict, k)
-                lock.release()
+                    lock.acquire()
+                    k = str(q_name)
+                    domain_dns_dict[k] = isp_dns_address[0]
+                    delete_later(domain_dns_dict, k)
+                    lock.release()
 
-            print('dns request : ', q_name, q_type_str, isp_dns_address)
-            fd.sendto(a.pack(), isp_dns_address)
+                print('dns request : ', q_name, q_type_str, isp_dns_address)
+                fd.sendto(a.pack(), isp_dns_address)
+            except Exception as e:
+                print(e)
 
 
 class ServerHandler(BaseHTTPRequestHandler):
