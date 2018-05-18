@@ -5,7 +5,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import dnslib
 
 
-SERVER_PUBLIC_IP = '35.189.162.161'
+SERVER_PUBLIC_IP = '39.104.58.222'
 
 lock = threading.Lock()
 domain_dns_dict = {}
@@ -79,3 +79,4 @@ if __name__ == '__main__':
     httpd.serve_forever()
 
     thread1.join()
+
