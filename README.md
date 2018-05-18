@@ -12,8 +12,7 @@ yum install daemonize
 ```
 客户端
 (bash)
-curl $(uuidgen).dns-test.xinlianxd.com:8053
-
+curl $(uuidgen).dns-leak.writebug.win:8053
 
 服务器
 bash run_daemon.sh
