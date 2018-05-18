@@ -1,8 +1,9 @@
+import sys
 import socket
 import threading
-from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import dnslib
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 
 SERVER_PUBLIC_IP = '39.104.58.222'
@@ -48,14 +49,17 @@ class DnsThread(threading.Thread):
                     lock.release()
 
                 print('dns request : ', q_name, q_type_str, isp_dns_address)
+                sys.stdout.flush()
                 fd.sendto(a.pack(), isp_dns_address)
             except Exception as e:
                 print(e)
+                sys.stdout.flush()
 
 
 class ServerHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         print('http request : ', self.client_address)
+        sys.stdout.flush()
 
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
@@ -79,4 +83,3 @@ if __name__ == '__main__':
     httpd.serve_forever()
 
     thread1.join()
-
